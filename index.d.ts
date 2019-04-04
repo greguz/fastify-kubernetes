@@ -63,7 +63,9 @@ declare module "fastify" {
     HttpRequest = http.IncomingMessage,
     HttpResponse = http.ServerResponse
   > {
-    kubernetes: fastifyKubernetes.FastifyKubernetesObject
+    kubernetes: fastifyKubernetes.FastifyKubernetesObject & {
+      [name: string]: fastifyKubernetes.FastifyKubernetesObject
+    }
   }
 }
 
