@@ -17,28 +17,23 @@ npm install --save fastify-kubernetes
 Add it to your project with `register` and you are done!
 
 ```javascript
+const { Core_v1Api } = require("@kubernetes/client-node")
 const fastify = require('fastify')()
 
 fastify.register(require('fastify-kubernetes'), {
   // Optional, defaults to OS default Kubeconfig file location
   file: "/home/app/.kube/config",
-  // Optional, default to "minkube"
-  cluster: "production",
-  // Optional, default to "default"
-  namespace: "default"
+  // Context to use
+  context: "production"
 })
 
-fastify.get('/clusters', function (req, reply) {
-  const { config } = this.kubernetes
-  const clusters = config.getClusters()
-  reply.send(clusters)
+fastify.get('/pods', function (req, reply) {
+  const client = this.kubernetes.makeClient(Core_v1Api)
+  const { body } = await client.listNamespacedPod(this.kubernetes.namespace);
+  reply.send(body)
 })
 
 fastify.listen(3000, err => {
   if (err) throw err
 })
 ```
-
-The `cluster` existence is verified on server start.
-
-The `namespace` is just a saved string, no checks are performed.
