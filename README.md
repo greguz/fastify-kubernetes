@@ -9,8 +9,10 @@ This plugin uses the [official Node.js Kubernetes client](https://www.npmjs.com/
 ## Install
 
 ```
-npm install --save fastify-kubernetes
+npm install --save @kubernetes/client-node fastify-kubernetes
 ```
+
+You need to install both this plugin and the kubernetes client, because the client is saved as a [peer depencency](https://nodejs.org/en/blog/npm/peer-dependencies/).
 
 ## Usage
 
