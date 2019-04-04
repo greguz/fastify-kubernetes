@@ -4,8 +4,9 @@
   "description": "Fastify Kubernetes client plugin",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint index.js",
-    "test": "npm run lint",
+    "test:lint": "eslint index.js test.js",
+    "test:unit": "tap test.js",
+    "test": "npm run test:lint && npm run test:unit",
     "prepublishOnly": "npm run test"
   },
   "keywords": [
@@ -32,6 +33,7 @@
     "eslint-plugin-promise": "^4.1.1",
     "eslint-plugin-standard": "^4.0.0",
     "fastify": "^2.1.0",
+    "tap": "^12.6.1",
     "typescript": "^3.4.1"
   },
   "peerDependencies": {
