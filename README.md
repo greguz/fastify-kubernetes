@@ -29,10 +29,10 @@ fastify.register(require('fastify-kubernetes'), {
   context: "production"
 })
 
-fastify.get('/pods', function (req, reply) {
+fastify.get('/pods', async function (req, reply) {
   const client = this.kubernetes.makeClient(Core_v1Api)
-  const { body } = await client.listNamespacedPod(this.kubernetes.namespace);
-  reply.send(body)
+  const result = await client.listNamespacedPod(this.kubernetes.namespace);
+  reply.send(result.body.items)
 })
 
 fastify.listen(3000, err => {
