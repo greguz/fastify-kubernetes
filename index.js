@@ -1,7 +1,7 @@
 'use strict'
 
+const kubernetes = require('@kubernetes/client-node')
 const makePlugin = require('fastify-plugin')
-const { KubeConfig } = require('@kubernetes/client-node')
 
 function getContext (config, options) {
   const name = options.context || 'minikube'
@@ -26,8 +26,31 @@ function getContext (config, options) {
   })
 }
 
+function buildGetter (config, Client) {
+  return function getter () {
+    return config.makeApiClient(Client)
+  }
+}
+
+function buildApi (config) {
+  const api = {}
+
+  for (const key of Object.keys(kubernetes)) {
+    const obj = kubernetes[key]
+
+    if (obj && obj.prototype && obj.prototype.setDefaultAuthentication) {
+      Object.defineProperty(api, key, {
+        enumerable: true,
+        get: buildGetter(config, obj)
+      })
+    }
+  }
+
+  return api
+}
+
 function fastifyKubernetes (fastify, options, callback) {
-  const config = new KubeConfig()
+  const config = new kubernetes.KubeConfig()
   try {
     if (options.file) {
       config.loadFromFile(options.file)
@@ -53,7 +76,7 @@ function fastifyKubernetes (fastify, options, callback) {
     cluster: context.cluster,
     user: context.user,
     namespace: context.namespace || 'default',
-    makeClient: config.makeApiClient.bind(config)
+    api: buildApi(config)
   }
 
   if (!name) {

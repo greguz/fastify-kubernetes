@@ -13,7 +13,7 @@ function testDecorator (tap, decorator) {
   tap.equal(namespace, 'default')
 }
 
-test('test', tap => {
+test('simple', tap => {
   const app = fastify()
 
   app
@@ -23,7 +23,7 @@ test('test', tap => {
 
       testDecorator(tap, app.kubernetes)
 
-      const client = app.kubernetes.makeClient(Core_v1Api)
+      const client = app.kubernetes.api.Core_v1Api
 
       client.listNamespacedPod(app.kubernetes.namespace)
         .catch(tap.error)
@@ -36,7 +36,7 @@ test('test', tap => {
     })
 })
 
-test('test', tap => {
+test('nested', tap => {
   const app = fastify()
 
   app
@@ -44,9 +44,10 @@ test('test', tap => {
     .ready(err => {
       tap.error(err)
 
+      testDecorator(tap, app.kubernetes)
       testDecorator(tap, app.kubernetes.minikube)
 
-      const client = app.kubernetes.minikube.makeClient(Core_v1Api)
+      const client = app.kubernetes.minikube.api.Core_v1Api
 
       client.listNamespacedPod(app.kubernetes.namespace)
         .catch(tap.error)

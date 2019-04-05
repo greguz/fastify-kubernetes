@@ -4,10 +4,11 @@
   "description": "Fastify Kubernetes client plugin",
   "main": "index.js",
   "scripts": {
-    "test:lint": "eslint index.js test.js",
+    "compile": "node src/compile.js",
+    "test:lint": "eslint index.js test.js src/compile.js",
     "test:unit": "tap test.js",
     "test": "npm run test:lint && npm run test:unit",
-    "prepublishOnly": "npm run test"
+    "prepublishOnly": "npm run compile && npm run test"
   },
   "keywords": [
     "fastify",
@@ -20,11 +21,15 @@
     "type": "git",
     "url": "https://github.com/greguz/fastify-kubernetes.git"
   },
+  "files": [
+    "index.js",
+    "index.d.ts"
+  ],
   "dependencies": {
+    "@kubernetes/client-node": "^0.8.2",
     "fastify-plugin": "^1.5.0"
   },
   "devDependencies": {
-    "@kubernetes/client-node": "^0.8.2",
     "@types/node": "^11.13.0",
     "eslint": "^5.16.0",
     "eslint-config-standard": "^12.0.0",
@@ -35,8 +40,5 @@
     "fastify": "^2.1.0",
     "tap": "^12.6.1",
     "typescript": "^3.4.1"
-  },
-  "peerDependencies": {
-    "@kubernetes/client-node": "^0.8.2"
   }
 }

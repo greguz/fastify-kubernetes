@@ -9,10 +9,8 @@ This plugin uses the [official Node.js Kubernetes client](https://www.npmjs.com/
 ## Install
 
 ```
-npm install --save @kubernetes/client-node fastify-kubernetes
+npm install --save fastify-kubernetes
 ```
-
-You need to install both this plugin and the kubernetes client, because the client is saved as a [peer depencency](https://nodejs.org/en/blog/npm/peer-dependencies/).
 
 ## Usage
 
@@ -30,7 +28,7 @@ fastify.register(require('fastify-kubernetes'), {
 })
 
 fastify.get('/pods', async function (req, reply) {
-  const client = this.kubernetes.makeClient(Core_v1Api)
+  const client = this.kubernetes.api.Core_v1Api
   const result = await client.listNamespacedPod(this.kubernetes.namespace);
   reply.send(result.body.items)
 })

@@ -1,6 +1,6 @@
 import * as http from "http"
 import * as fastify from "fastify"
-import { ApiConstructor, ApiType, KubeConfig } from "@kubernetes/client-node"
+import * as kubernetes from "@kubernetes/client-node"
 
 declare namespace fastifyKubernetes {
   interface FastifyKubernetesOptions {
@@ -33,7 +33,7 @@ declare namespace fastifyKubernetes {
     /**
      * Kubernetes config instance
      */
-    config: KubeConfig
+    config: kubernetes.KubeConfig
     /**
      * Current context
      */
@@ -51,9 +51,11 @@ declare namespace fastifyKubernetes {
      */
     namespace: string
     /**
-     * Shortcut for config.makeApiClient()
+     * Client instances collection
      */
-    makeClient: <T extends ApiType>(Client: ApiConstructor<T>) => T
+    api: {
+      /** AUTOMATION REQUIRED **/
+    }
   }
 }
 
