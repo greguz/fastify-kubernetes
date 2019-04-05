@@ -4,7 +4,7 @@
 
 Fastify Kubernetes client plugin.
 
-This plugin uses the [official Node.js Kubernetes client](https://www.npmjs.com/package/@kubernetes/client-node) under the hood.
+This plugin uses the [official Node.js Kubernetes client](https://www.npmjs.com/package/@kubernetes/client-node) under the hood. The current bundled version  is `v0.8.2`.
 
 ## Install
 
