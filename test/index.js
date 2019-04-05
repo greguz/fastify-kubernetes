@@ -1,12 +1,14 @@
 const { test } = require('tap')
 const fastify = require('fastify')
-const kubernetes = require('./index')
-const { Core_v1Api, KubeConfig } = require('@kubernetes/client-node') // eslint-disable-line
+const proxyquire = require('proxyquire')
+
+const kubernetes = proxyquire('../index.js', {
+  '@kubernetes/client-node': process.env.K8S_CONFIG ? {} : require('./mock')
+})
 
 function testDecorator (tap, decorator) {
-  const { config, context, cluster, user, namespace } = decorator
+  const { context, cluster, user, namespace } = decorator
 
-  tap.equal(config instanceof KubeConfig, true)
   tap.equal(context, 'minikube')
   tap.equal(cluster, 'minikube')
   tap.equal(user, 'minikube')
@@ -17,7 +19,7 @@ test('simple', tap => {
   const app = fastify()
 
   app
-    .register(kubernetes)
+    .register(kubernetes, { file: process.env.K8S_CONFIG })
     .ready(err => {
       tap.error(err)
 
@@ -40,7 +42,10 @@ test('nested', tap => {
   const app = fastify()
 
   app
-    .register(kubernetes, { name: 'minikube' })
+    .register(kubernetes, {
+      file: process.env.K8S_CONFIG,
+      name: 'minikube'
+    })
     .ready(err => {
       tap.error(err)
 
