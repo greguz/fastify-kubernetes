@@ -10,7 +10,6 @@ class FakeClient {
 
 class KubeConfig {
   loadFromDefault () { }
-  loadFromFile () { }
   setCurrentContext () { }
   getContexts () {
     return [{
