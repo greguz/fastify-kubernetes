@@ -17,7 +17,6 @@ npm install --save fastify-kubernetes
 Add it to your project with `register` and you are done!
 
 ```javascript
-const { Core_v1Api } = require("@kubernetes/client-node")
 const fastify = require('fastify')()
 
 fastify.register(require('fastify-kubernetes'), {
