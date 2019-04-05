@@ -36,3 +36,37 @@ fastify.listen(3000, err => {
   if (err) throw err
 })
 ```
+
+## Reference
+
+The plugin will inject six properties under `kubernetes` decorator.
+
+### config
+
+KubeConfig class instance.
+
+### context
+
+Current context name.
+
+### cluster
+
+Current context's cluster.
+
+### user
+
+Current context's user.
+
+### namespace
+
+Current context's namespace, defaults to `"default"`.
+
+### api
+
+Object containing all possible client instances. You can retrieve a client by its name from the kubernetes client lib.
+
+```javascript
+this.kubernetes.api.Core_v1Api
+this.kubernetes.api.Batch_v1Api
+this.kubernetes.api.Batch_v1beta1Api
+```
