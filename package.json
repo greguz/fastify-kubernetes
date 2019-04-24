@@ -1,6 +1,6 @@
 {
   "name": "fastify-kubernetes",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Fastify Kubernetes client plugin",
   "main": "index.js",
   "scripts": {
