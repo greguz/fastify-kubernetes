@@ -4,7 +4,7 @@
 
 Fastify Kubernetes client plugin.
 
-This plugin uses the [official Node.js Kubernetes client](https://www.npmjs.com/package/@kubernetes/client-node) under the hood. The current bundled version  is `v0.8.2`.
+This plugin uses the [official Node.js Kubernetes client](https://www.npmjs.com/package/@kubernetes/client-node) under the hood.
 
 ## Install
 
@@ -27,7 +27,7 @@ fastify.register(require('fastify-kubernetes'), {
 })
 
 fastify.get('/pods', async function (req, reply) {
-  const client = this.kubernetes.api.Core_v1Api
+  const client = this.kubernetes.api.CoreV1Api
   const result = await client.listNamespacedPod(this.kubernetes.namespace)
   reply.send(result.body.items)
 })
@@ -63,8 +63,8 @@ fastify
   })
 
 fastify.get('/', async function (req, reply) {
-  const euClient = this.kubernetes.eu.api.Core_v1Api
-  const usClient = this.kubernetes.us.api.Core_v1Api
+  const euClient = this.kubernetes.eu.api.CoreV1Api
+  const usClient = this.kubernetes.us.api.CoreV1Api
   // ------------
   // do your stuff here
   // ------------
@@ -88,7 +88,7 @@ The plugin will inject six properties under `kubernetes` decorator.
 You can retrieve a client by its original name from the kubernetes lib.
 
 ```javascript
-const client0 = this.kubernetes.api.Core_v1Api
-const client1 = this.kubernetes.api.Batch_v1Api
-const client2 = this.kubernetes.api.Batch_v1beta1Api
+const client0 = this.kubernetes.api.CoreV1Api
+const client1 = this.kubernetes.api.BatchV1Api
+const client2 = this.kubernetes.api.BatchV1beta1Api
 ```
