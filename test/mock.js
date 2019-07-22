@@ -10,7 +10,9 @@ class FakeClient {
 
 class KubeConfig {
   loadFromDefault () { }
+
   setCurrentContext () { }
+
   getContexts () {
     return [{
       name: 'minikube',
@@ -18,6 +20,7 @@ class KubeConfig {
       user: 'minikube'
     }]
   }
+
   makeApiClient () {
     return new FakeClient()
   }

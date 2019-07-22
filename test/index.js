@@ -25,7 +25,7 @@ test('simple', tap => {
 
       testDecorator(tap, app.kubernetes)
 
-      const client = app.kubernetes.api.Core_v1Api
+      const client = app.kubernetes.api.CoreV1Api
 
       client.listNamespacedPod(app.kubernetes.namespace)
         .catch(tap.error)
@@ -52,7 +52,7 @@ test('nested', tap => {
       testDecorator(tap, app.kubernetes)
       testDecorator(tap, app.kubernetes.minikube)
 
-      const client = app.kubernetes.minikube.api.Core_v1Api
+      const client = app.kubernetes.minikube.api.CoreV1Api
 
       client.listNamespacedPod(app.kubernetes.namespace)
         .catch(tap.error)
