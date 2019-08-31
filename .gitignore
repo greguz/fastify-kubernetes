@@ -2,3 +2,4 @@
 node_modules
 npm-debug.log
 index.d.ts
+.nyc_output
