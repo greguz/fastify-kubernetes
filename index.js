@@ -28,7 +28,11 @@ function getContext (config, options) {
 
 function buildGetter (config, Client) {
   return function getter () {
-    return config.makeApiClient(Client)
+    let client
+    if (!client) {
+      client = config.makeApiClient(Client)
+    }
+    return client
   }
 }
 
