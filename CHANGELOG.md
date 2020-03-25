@@ -1,3 +1,8 @@
+0.6.2 / 2020-03-25
+===================
+
+  * Upgrade `@kubernetes/client-node` to `^0.11.1`
+
 0.6.1 / 2019-12-14
 ===================
 
@@ -6,7 +11,7 @@
 0.6.0 / 2019-08-31
 ===================
 
-  * Upgrade `@kubernetes/client-node` at `^0.11.0` version
+  * Upgrade `@kubernetes/client-node` to `^0.11.0`
 
 0.5.1 / 2019-07-22
 ===================
