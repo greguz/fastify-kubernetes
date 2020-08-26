@@ -2,7 +2,7 @@ const { test } = require('tap')
 const fastify = require('fastify')
 const proxyquire = require('proxyquire')
 
-const kubernetes = proxyquire('../index.js', {
+const kubernetes = proxyquire('../fastify-kubernetes.js', {
   '@kubernetes/client-node': process.env.K8S_CONFIG ? {} : require('./mock')
 })
 

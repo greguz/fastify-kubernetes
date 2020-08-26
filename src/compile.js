@@ -13,7 +13,7 @@ for (const key of Object.keys(kubernetes)) {
 
 const content = fs.readFileSync('src/template.d.ts', { encoding })
 fs.writeFileSync(
-  'index.d.ts',
+  'fastify-kubernetes.d.ts',
   content.replace(/\/\*\* AUTOMATION REQUIRED \*\*\//, api),
   { encoding }
 )

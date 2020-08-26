@@ -2,10 +2,10 @@
   "name": "fastify-kubernetes",
   "version": "0.6.2",
   "description": "Fastify Kubernetes client plugin",
-  "main": "index.js",
+  "main": "fastify-kubernetes.js",
   "scripts": {
     "compile": "node src/compile.js",
-    "test:lint": "eslint index.js test src",
+    "test:lint": "eslint fastify-kubernetes.js test src",
     "test:unit": "tap test/index.js",
     "test": "npm run test:lint && npm run test:unit",
     "prepublishOnly": "npm run compile && npm run test"
@@ -22,8 +22,8 @@
     "url": "https://github.com/greguz/fastify-kubernetes.git"
   },
   "files": [
-    "index.js",
-    "index.d.ts"
+    "fastify-kubernetes.js",
+    "fastify-kubernetes.d.ts"
   ],
   "dependencies": {
     "@kubernetes/client-node": "^0.12.0",

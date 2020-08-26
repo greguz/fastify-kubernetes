@@ -1,5 +1,5 @@
 .vscode
 node_modules
 npm-debug.log
-index.d.ts
+fastify-kubernetes.d.ts
 .nyc_output
