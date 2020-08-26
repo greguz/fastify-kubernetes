@@ -1,5 +1,4 @@
-import * as http from "http"
-import * as fastify from "fastify"
+import { FastifyPlugin } from "fastify"
 import * as kubernetes from "@kubernetes/client-node"
 
 declare namespace fastifyKubernetes {
@@ -54,27 +53,21 @@ declare namespace fastifyKubernetes {
      * Client instances collection
      */
     api: {
-      /** AUTOMATION REQUIRED **/
+/** AUTOMATION REQUIRED **/
+      [key: string]: any
     }
   }
 }
 
 declare module "fastify" {
-  interface FastifyInstance<
-    HttpServer = http.Server,
-    HttpRequest = http.IncomingMessage,
-    HttpResponse = http.ServerResponse
-  > {
+  interface FastifyInstance {
     kubernetes: fastifyKubernetes.FastifyKubernetesObject & {
       [name: string]: fastifyKubernetes.FastifyKubernetesObject
     }
   }
 }
 
-declare let fastifyKubernetes: fastify.Plugin<
-  http.Server,
-  http.IncomingMessage,
-  http.ServerResponse,
+declare let fastifyKubernetes: FastifyPlugin<
   fastifyKubernetes.FastifyKubernetesOptions
 >
 
