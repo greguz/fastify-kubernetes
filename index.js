@@ -104,6 +104,6 @@ function fastifyKubernetes (fastify, options, callback) {
 }
 
 module.exports = makePlugin(fastifyKubernetes, {
-  fastify: '^2.0.0',
+  fastify: '^3.0.0',
   name: 'fastify-kubernetes'
 })
