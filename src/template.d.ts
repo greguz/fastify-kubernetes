@@ -1,5 +1,5 @@
-import { FastifyPlugin } from "fastify"
-import * as kubernetes from "@kubernetes/client-node"
+import { FastifyPluginCallback } from 'fastify'
+import * as kubernetes from '@kubernetes/client-node'
 
 declare namespace fastifyKubernetes {
   interface FastifyKubernetesOptions {
@@ -8,7 +8,7 @@ declare namespace fastifyKubernetes {
      */
     file?: string
     /**
-     * Context to use, default to "minikube"
+     * Context to use, default to 'minikube'
      */
     context?: string
     /**
@@ -59,7 +59,7 @@ declare namespace fastifyKubernetes {
   }
 }
 
-declare module "fastify" {
+declare module 'fastify' {
   interface FastifyInstance {
     kubernetes: fastifyKubernetes.FastifyKubernetesObject & {
       [name: string]: fastifyKubernetes.FastifyKubernetesObject
@@ -67,7 +67,7 @@ declare module "fastify" {
   }
 }
 
-declare let fastifyKubernetes: FastifyPlugin<
+declare let fastifyKubernetes: FastifyPluginCallback<
   fastifyKubernetes.FastifyKubernetesOptions
 >
 
