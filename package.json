@@ -6,9 +6,9 @@
   "types": "fastify-kubernetes.d.ts",
   "scripts": {
     "build": "node src/build.js",
-    "test:lint": "eslint fastify-kubernetes.js test src",
+    "lint": "standard fastify-kubernetes.js test src",
     "test:unit": "tap test/index.js",
-    "test": "npm run test:lint && npm run test:unit",
+    "test": "npm run lint && npm run test:unit",
     "prepublishOnly": "npm run build && npm run test"
   },
   "keywords": [
@@ -28,16 +28,11 @@
   ],
   "dependencies": {
     "@kubernetes/client-node": "^0.13.0",
-    "fastify-plugin": "^3.0.0"
+    "fastify-plugin": "^3.0.0",
+    "standard": "^16.0.4"
   },
   "devDependencies": {
     "@types/node": "^14.14.10",
-    "eslint": "^7.14.0",
-    "eslint-config-standard": "^16.0.2",
-    "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^5.0.0",
     "fastify": "^3.8.0",
     "proxyquire": "^2.1.3",
     "tap": "^14.11.0"
