@@ -1,5 +1,6 @@
-.vscode
-node_modules
-npm-debug.log
-fastify-kubernetes.d.ts
-.nyc_output
+/.vscode
+/node_modules
+/npm-debug.log
+/fastify-kubernetes.d.ts
+/.nyc_output
+/package-lock.json
