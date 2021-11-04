@@ -1,66 +1,93 @@
 const tap = require('tap')
-const fastify = require('fastify')
+const Fastify = require('fastify')
 const proxyquire = require('proxyquire')
 
 const kubernetes = proxyquire('../fastify-kubernetes.js', {
   '@kubernetes/client-node': process.env.K8S_CONFIG ? {} : require('./mock')
 })
 
-function testDecorator (tap, decorator) {
-  const { context, cluster, user, namespace } = decorator
+function register (t, options, callback) {
+  const fastify = Fastify()
+  t.teardown(() => fastify.close())
 
-  tap.equal(context, 'minikube')
-  tap.equal(cluster, 'minikube')
-  tap.equal(user, 'minikube')
-  tap.equal(namespace, 'default')
+  fastify.register(kubernetes, options)
+    .ready(err => callback(err, fastify))
 }
 
-tap.test('simple', t => {
-  const app = fastify()
+function testDecorator (t, decorator) {
+  t.ok(decorator)
+  t.equal(decorator.context, 'minikube')
+  t.equal(decorator.cluster, 'minikube')
+  t.equal(decorator.user, 'minikube')
+  t.equal(decorator.namespace, 'default')
+  t.ok(decorator.api)
+  t.ok(decorator.api.CoreV1Api)
+}
 
-  app
-    .register(kubernetes, { file: process.env.K8S_CONFIG })
-    .ready(err => {
-      t.error(err)
+tap.test('smoke', t => {
+  t.plan(1 + 7 + 1)
 
-      testDecorator(t, app.kubernetes)
+  register(t, { file: process.env.K8S_CONFIG }, (err, fastify) => {
+    t.error(err)
+    testDecorator(t, fastify.kubernetes)
 
-      const client = app.kubernetes.api.CoreV1Api
-
-      client.listNamespacedPod(app.kubernetes.namespace)
-        .catch(t.error)
-        .then(result => t.equal(Array.isArray(result.body.items), true))
-        .then(() => {
-          app.close(() => {
-            t.end()
-          })
-        })
-    })
+    const client = fastify.kubernetes.api.CoreV1Api
+    client.listNamespacedPod(fastify.kubernetes.namespace)
+      .catch(t.error)
+      .then(result => t.ok(Array.isArray(result.body.items)))
+  })
 })
 
-tap.test('nested', t => {
-  const app = fastify()
+tap.test('named', t => {
+  t.plan(1 + 7 + 7 + 1)
 
-  app
-    .register(kubernetes, {
-      file: process.env.K8S_CONFIG,
-      name: 'minikube'
-    })
-    .ready(err => {
-      t.error(err)
+  register(t, { file: process.env.K8S_CONFIG, name: 'minikube' }, (err, fastify) => {
+    t.error(err)
+    testDecorator(t, fastify.kubernetes)
+    testDecorator(t, fastify.kubernetes.minikube)
 
-      testDecorator(t, app.kubernetes)
-      testDecorator(t, app.kubernetes.minikube)
+    const client = fastify.kubernetes.minikube.api.CoreV1Api
+    client.listNamespacedPod(fastify.kubernetes.namespace)
+      .catch(t.error)
+      .then(result => t.equal(Array.isArray(result.body.items), true))
+  })
+})
 
-      const client = app.kubernetes.minikube.api.CoreV1Api
+tap.test('default-collision', t => {
+  t.plan(2)
 
-      client.listNamespacedPod(app.kubernetes.namespace)
-        .catch(t.error)
-        .then(result => t.equal(Array.isArray(result.body.items), true))
-        .then(() => {
-          app.close(() => {
-            t.end()
-          })
-        })
-    })
+  const fastify = Fastify()
+  t.teardown(() => fastify.close())
+
+  fastify.register(kubernetes, { file: '/a.kube.config' })
+  fastify.register(kubernetes, { file: '/b.kube.config' })
+
+  fastify.ready(err => {
+    t.ok(err)
+    t.equal(err.message, 'fastify-kubernetes has already registered')
+  })
+})
+
+tap.test('named-collision', t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+  t.teardown(() => fastify.close())
+
+  fastify.register(kubernetes, { name: 'collision', file: '/a.kube.config' })
+  fastify.register(kubernetes, { name: 'collision', file: '/b.kube.config' })
+
+  fastify.ready(err => {
+    t.ok(err)
+    t.equal(err.message, 'Context name already registered: collision')
+  })
+})
+
+tap.test('context-not-found', t => {
+  t.plan(2)
+
+  register(t, { file: process.env.K8S_CONFIG, context: 'nope' }, (err, fastify) => {
+    t.ok(err)
+    t.equal(err.message, 'Kubernetes context not found')
+  })
 })

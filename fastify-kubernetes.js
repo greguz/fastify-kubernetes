@@ -42,6 +42,7 @@ function buildApi (config) {
 
     if (obj && obj.prototype && obj.prototype.setDefaultAuthentication) {
       Object.defineProperty(api, key, {
+        configurable: true,
         enumerable: true,
         get: buildGetter(config, obj)
       })
@@ -65,7 +66,7 @@ function fastifyKubernetes (fastify, options, callback) {
 
   const context = getContext(config, options)
   if (!context) {
-    callback(new Error('Context not found'))
+    callback(new Error('Kubernetes context not found'))
     return
   }
 
@@ -83,7 +84,7 @@ function fastifyKubernetes (fastify, options, callback) {
 
   if (!name) {
     if (fastify.kubernetes) {
-      callback(new Error('Plugin fastify-kubernetes has already registered'))
+      callback(new Error('fastify-kubernetes has already registered'))
       return
     }
     fastify.decorate('kubernetes', obj)
@@ -92,7 +93,7 @@ function fastifyKubernetes (fastify, options, callback) {
       fastify.decorate('kubernetes', obj)
     }
     if (fastify.kubernetes[name]) {
-      callback(new Error('Duplicated registration'))
+      callback(new Error('Context name already registered: ' + name))
       return
     }
     fastify.kubernetes[name] = obj
