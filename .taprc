@@ -1,0 +1,51 @@
+# after: null
+# bail: false
+# before: null
+branches: 50
+browser: false
+# changed: false
+check-coverage: true
+# color: false
+# comments: false
+coverage: true
+# coverage-map: null
+coverage-report: [
+  html,
+  lcov,
+  text
+]
+# debug: false
+# files: []
+# flow: false
+functions: 50
+# grep: []
+# help: false
+# invert: false
+# jobs: 8
+# jsx: false
+# libtap-settings: null
+lines: 50
+# node-arg: []
+# nyc-arg: []
+# nyc-help: false
+# nyc-version: false
+# only: false
+# output-dir: null
+# output-file: null
+# parser-version: false
+# reporter: tap
+# reporter-arg: []
+# save: null
+# save-fixture: false
+# show-process-tree: false
+# snapshot: false
+statements: 50
+# test-arg: []
+# test-env: []
+# test-ignore: $.
+# test-regex: ((\/|^)(tests?|__tests?__)\/.*|\.(tests?|spec)|^\/?tests?)\.([mc]js|[jt]sx?)$
+# timeout: 30
+# ts: false
+# version: false
+# versions: false
+# watch: false

@@ -4,24 +4,22 @@ const kubernetes = require('@kubernetes/client-node')
 const makePlugin = require('fastify-plugin')
 
 function getContext (config, options) {
-  const name = options.context || 'minikube'
-  const contexts = config.getContexts()
+  const contextName = options.context || 'minikube'
+  const namespace = options.namespace || 'default'
 
-  return contexts.find(context => {
-    if (context.name !== name) {
+  return config.getContexts().find(context => {
+    if (context.name !== contextName) {
       return false
     }
-
     if (options.cluster && context.cluster !== options.cluster) {
       return false
     }
     if (options.user && context.user !== options.user) {
       return false
     }
-    if ((context.namespace || 'default') !== (options.namespace || 'default')) {
+    if ((context.namespace || 'default') !== namespace) {
       return false
     }
-
     return true
   })
 }

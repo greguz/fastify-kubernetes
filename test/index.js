@@ -1,4 +1,4 @@
-const { test } = require('tap')
+const tap = require('tap')
 const fastify = require('fastify')
 const proxyquire = require('proxyquire')
 
@@ -15,30 +15,30 @@ function testDecorator (tap, decorator) {
   tap.equal(namespace, 'default')
 }
 
-test('simple', tap => {
+tap.test('simple', t => {
   const app = fastify()
 
   app
     .register(kubernetes, { file: process.env.K8S_CONFIG })
     .ready(err => {
-      tap.error(err)
+      t.error(err)
 
-      testDecorator(tap, app.kubernetes)
+      testDecorator(t, app.kubernetes)
 
       const client = app.kubernetes.api.CoreV1Api
 
       client.listNamespacedPod(app.kubernetes.namespace)
-        .catch(tap.error)
-        .then(result => tap.equal(Array.isArray(result.body.items), true))
+        .catch(t.error)
+        .then(result => t.equal(Array.isArray(result.body.items), true))
         .then(() => {
           app.close(() => {
-            tap.end()
+            t.end()
           })
         })
     })
 })
 
-test('nested', tap => {
+tap.test('nested', t => {
   const app = fastify()
 
   app
@@ -47,19 +47,19 @@ test('nested', tap => {
       name: 'minikube'
     })
     .ready(err => {
-      tap.error(err)
+      t.error(err)
 
-      testDecorator(tap, app.kubernetes)
-      testDecorator(tap, app.kubernetes.minikube)
+      testDecorator(t, app.kubernetes)
+      testDecorator(t, app.kubernetes.minikube)
 
       const client = app.kubernetes.minikube.api.CoreV1Api
 
       client.listNamespacedPod(app.kubernetes.namespace)
-        .catch(tap.error)
-        .then(result => tap.equal(Array.isArray(result.body.items), true))
+        .catch(t.error)
+        .then(result => t.equal(Array.isArray(result.body.items), true))
         .then(() => {
           app.close(() => {
-            tap.end()
+            t.end()
           })
         })
     })
