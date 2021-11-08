@@ -4,9 +4,13 @@ import * as kubernetes from '@kubernetes/client-node'
 declare namespace fastifyKubernetes {
   interface FastifyKubernetesOptions {
     /**
-     * Kube config file location, default to OS default location
+     * Kubeconfig file path. If both `file` and `yaml` options are not provided, will be used the default OS's kubeconfig file.
      */
     file?: string
+    /**
+     * Kubeconfig file content. If both `file` and `yaml` options are not provided, will be used the default OS's kubeconfig file.
+     */
+    yaml?: string | Buffer
     /**
      * Context to use, default to 'minikube'
      */

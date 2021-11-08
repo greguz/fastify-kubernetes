@@ -44,13 +44,16 @@ fastify.listen(3000, err => {
 
 All properties are optional.
 
-- `file` is the *kube config* file location
+- `file` Kubeconfig file path.
+- `yaml` Kubeconfig file content (could be a string or a buffer).
 - `context` is the context to use, defaults to `"minikube"`
 - `cluster` if provided, this plugin ensures that is the cluster used by the current context
 - `user` if provided, this plugin ensures that is the user used by the current context
 - `namespace` if provided, this plugin ensures that is the namespace used by the current context
 
-A `name` option can be used in order to connect to multiple kubernetes clusters.
+> A `name` option can be used in order to connect to multiple kubernetes clusters.
+
+> If both `file` and `yaml` options are not provided, will be loaded the default OS's kubeconfig file.
 
 ```javascript
 const fastify = require('fastify')()

@@ -57,6 +57,8 @@ function fastifyKubernetes (fastify, options, callback) {
   try {
     if (options.file) {
       config.loadFromFile(options.file)
+    } else if (options.yaml) {
+      config.loadFromString(options.yaml.toString())
     } else {
       config.loadFromDefault()
     }
