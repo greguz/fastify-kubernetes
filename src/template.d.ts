@@ -1,78 +1,96 @@
-import { FastifyPluginCallback } from 'fastify'
-import * as kubernetes from '@kubernetes/client-node'
+import { FastifyPluginCallback } from "fastify";
+import * as kubernetes from "@kubernetes/client-node";
 
 declare namespace fastifyKubernetes {
   interface FastifyKubernetesOptions {
     /**
-     * Kubeconfig file path. If both `file` and `yaml` options are not provided, will be used the default OS's kubeconfig file.
+     * Kubeconfig loading mode:
+     * - `"auto"`: Choose the first available config mode in this order: `"file"`, `"yaml"`, `"in-cluster"`, and `"default"`.
+     * - `"default"`: Load config file the default OS location.
+     * - `"file"`: Load config file from `file` option.
+     * - `"in-cluster"`: Load in-cluster kubeconfig file.
+     * - `"yaml"`: Load config from `yaml` option.
+     * - `KubeConfig`: Load custom `KubeConfig` instance.
+     *
+     * @default "auto"
      */
-    file?: string
+    kubeconfig?:
+      | "auto"
+      | "default"
+      | "file"
+      | "in-cluster"
+      | "yaml"
+      | kubernetes.KubeConfig;
     /**
-     * Kubeconfig file content. If both `file` and `yaml` options are not provided, will be used the default OS's kubeconfig file.
+     * Kubeconfig file path.
      */
-    yaml?: string | Buffer
+    file?: string;
     /**
-     * Context to use, default to 'minikube'
+     * Kubeconfig YAML string (or buffer) content.
      */
-    context?: string
+    yaml?: string | Buffer;
     /**
-     * If specified, the context's cluster is verified
+     * Wanted context. If the context does not exist, an error will be thrown.
      */
-    cluster?: string
+    context?: string;
     /**
-     * If specified, the context's user is verified
+     * Wanted cluster. If the cluster does not exist, an error will be thrown.
      */
-    user?: string
+    cluster?: string;
     /**
-     * If specified, the context's namespace is verified
+     * Wanted user. If the user does not exist, an error will be thrown.
      */
-    namespace?: string
+    user?: string;
     /**
-     * Nested config name
+     * Wanted namespace.
+     *
+     * @default "default"
      */
-    name?: string
+    namespace?: string;
+    /**
+     * Nested (Fastify) decorator name.
+     */
+    name?: string;
   }
   interface FastifyKubernetesObject {
     /**
      * Kubernetes config instance
      */
-    config: kubernetes.KubeConfig
+    config: kubernetes.KubeConfig;
     /**
      * Current context
      */
-    context: string
+    context: string;
     /**
      * Current cluster
      */
-    cluster: string
+    cluster: string;
     /**
      * Current user
      */
-    user: string
+    user: string;
     /**
      * Current namespace
      */
-    namespace: string
+    namespace: string;
     /**
      * Client instances collection
      */
     api: {
-/** AUTOMATION REQUIRED **/
-      [key: string]: any
-    }
+      /** AUTOMATION REQUIRED **/
+      [key: string]: any;
+    };
   }
 }
 
-declare module 'fastify' {
+declare module "fastify" {
   interface FastifyInstance {
     kubernetes: fastifyKubernetes.FastifyKubernetesObject & {
-      [name: string]: fastifyKubernetes.FastifyKubernetesObject
-    }
+      [name: string]: fastifyKubernetes.FastifyKubernetesObject;
+    };
   }
 }
 
-declare let fastifyKubernetes: FastifyPluginCallback<
-  fastifyKubernetes.FastifyKubernetesOptions
->
+declare let fastifyKubernetes: FastifyPluginCallback<fastifyKubernetes.FastifyKubernetesOptions>;
 
-export = fastifyKubernetes
+export = fastifyKubernetes;

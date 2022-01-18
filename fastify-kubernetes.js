@@ -4,11 +4,10 @@ const kubernetes = require('@kubernetes/client-node')
 const makePlugin = require('fastify-plugin')
 
 function getContext (config, options) {
-  const contextName = options.context || 'minikube'
   const namespace = options.namespace || 'default'
 
   return config.getContexts().find(context => {
-    if (context.name !== contextName) {
+    if (options.context && context.name !== options.context) {
       return false
     }
     if (options.cluster && context.cluster !== options.cluster) {
@@ -52,18 +51,69 @@ function buildApi (config) {
   return api
 }
 
-function fastifyKubernetes (fastify, options, callback) {
+function loadFromFile (file) {
+  if (typeof file !== 'string') {
+    throw new Error('Cannot load kubeconfig: option "file" is not a string')
+  }
   const config = new kubernetes.KubeConfig()
+  config.loadFromFile(file)
+  return config
+}
+
+function loadFromString (yaml) {
+  if (typeof yaml !== 'string' && !Buffer.isBuffer(yaml))  {
+    throw new Error('Cannot load kubeconfig: option "yaml" is not a string or buffer')
+  }
+  const config = new kubernetes.KubeConfig()
+  config.loadFromString(yaml.toString())
+  return config
+}
+
+function loadFromCluster () {
+  const config = new kubernetes.KubeConfig()
+  config.loadFromCluster()
+  return config
+}
+
+function loadFromDefault () {
+  const config = new kubernetes.KubeConfig()
+  config.loadFromDefault()
+  return config
+}
+
+function loadConfig(options) {
+  // Explicit target
+  if (typeof options.kubeconfig === 'object' && options.kubeconfig !== null) {
+    return options.kubeconfig
+  } else if (options.kubeconfig === 'file') {
+    return loadFromFile(options.file)
+  } else if (options.kubeconfig === 'yaml') {
+    return loadFromString(options.yaml)
+  } else if (options.kubeconfig === 'default') {
+    return loadFromDefault()
+  } else if (options.kubeconfig === 'in-cluster') {
+    return loadFromCluster()
+  }
+
+  // Auto mode
+  if (options.file) {
+    return loadFromFile(options.file)
+  } else if (options.yaml) {
+    return loadFromString(options.yaml)
+  } else if (process.env.KUBERNETES_SERVICE_HOST) {
+    return loadFromCluster()
+  } else {
+    return loadFromDefault()
+  }
+}
+
+function fastifyKubernetes (fastify, options, callback) {
+  let config
   try {
-    if (options.file) {
-      config.loadFromFile(options.file)
-    } else if (options.yaml) {
-      config.loadFromString(options.yaml.toString())
-    } else {
-      config.loadFromDefault()
-    }
+    config = loadConfig(options)
   } catch (err) {
-    return callback(err)
+    callback(err)
+    return
   }
 
   const context = getContext(config, options)

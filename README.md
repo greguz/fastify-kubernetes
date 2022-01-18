@@ -44,16 +44,21 @@ fastify.listen(3000, err => {
 
 All properties are optional.
 
-- `file` Kubeconfig file path.
-- `yaml` Kubeconfig file content (could be a string or a buffer).
-- `context` is the context to use, defaults to `"minikube"`
-- `cluster` if provided, this plugin ensures that is the cluster used by the current context
-- `user` if provided, this plugin ensures that is the user used by the current context
-- `namespace` if provided, this plugin ensures that is the namespace used by the current context
+- `kubeconfig`: Kubernetes config file loading mode. Default is `"auto"`.
+  - `"auto"`: Choose the first available mode in this order: Choose the first available config mode in this order: `"file"`, `"yaml"`, `"in-cluster"`, and `"default"`.
+  - `"default"`: Load config file the default OS location.
+  - `"file"`: Load config file from `file` option.
+  - `"in-cluster"`: Load in-cluster kubeconfig file.
+  - `"yaml"`: Load config from `yaml` option.
+  - `KubeConfig`: Load custom `KubeConfig` instance.
+- `file`: Config file path.
+- `yaml`: Config file content (string or buffer).
+- `context`: Wanted context. If the context does not exist, an error will be thrown.
+- `cluster`: Wanted cluster. If the cluster does not exist, an error will be thrown.
+- `user`: Wanted user. If the user does not exist, an error will be thrown.
+- `namespace`: Wanted namespace.
 
 > A `name` option can be used in order to connect to multiple kubernetes clusters.
-
-> If both `file` and `yaml` options are not provided, will be loaded the default OS's kubeconfig file.
 
 ```javascript
 const fastify = require('fastify')()
@@ -82,7 +87,7 @@ fastify.get('/', async function (req, reply) {
 
 The plugin will inject six properties under `kubernetes` decorator.
 
-- `config` is the *KubeConfig* instance
+- `config` is the `KubeConfig` instance
 - `context` is the current context name
 - `cluster` is the context's cluster
 - `user` is the context's user

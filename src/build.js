@@ -7,7 +7,7 @@ let api = ''
 for (const key of Object.keys(kubernetes)) {
   const obj = kubernetes[key]
   if (obj && obj.prototype && obj.prototype.setDefaultAuthentication) {
-    api += `      ${key}: kubernetes.${key}\n`
+    api += `      ${key}: kubernetes.${key};\n`
   }
 }
 
