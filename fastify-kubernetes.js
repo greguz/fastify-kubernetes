@@ -61,7 +61,7 @@ function loadFromFile (file) {
 }
 
 function loadFromString (yaml) {
-  if (typeof yaml !== 'string' && !Buffer.isBuffer(yaml))  {
+  if (typeof yaml !== 'string' && !Buffer.isBuffer(yaml)) {
     throw new Error('Cannot load kubeconfig: option "yaml" is not a string or buffer')
   }
   const config = new kubernetes.KubeConfig()
@@ -81,7 +81,7 @@ function loadFromDefault () {
   return config
 }
 
-function loadConfig(options) {
+function loadConfig (options) {
   // Explicit target
   if (typeof options.kubeconfig === 'object' && options.kubeconfig !== null) {
     return options.kubeconfig
