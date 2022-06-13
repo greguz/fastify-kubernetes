@@ -1,7 +1,7 @@
 # after: null
 # bail: false
 # before: null
-branches: 75
+branches: 50
 browser: false
 # changed: false
 check-coverage: true
@@ -17,14 +17,14 @@ coverage-report: [
 # debug: false
 # files: []
 # flow: false
-functions: 75
+functions: 50
 # grep: []
 # help: false
 # invert: false
 # jobs: 8
 # jsx: false
 # libtap-settings: null
-lines: 75
+lines: 50
 # node-arg: []
 # nyc-arg: []
 # nyc-help: false
@@ -39,7 +39,7 @@ lines: 75
 # save-fixture: false
 # show-process-tree: false
 # snapshot: false
-statements: 75
+statements: 50
 # test-arg: []
 # test-env: []
 # test-ignore: $.
