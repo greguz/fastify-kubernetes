@@ -79,7 +79,7 @@ tap.test('named-collision', t => {
 
   fastify.ready(err => {
     t.ok(err)
-    t.equal(err.message, 'Context name already registered: collision')
+    t.equal(err.message, 'Kubernetes context "collision" already registered')
   })
 })
 

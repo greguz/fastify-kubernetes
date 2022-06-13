@@ -1,7 +1,7 @@
 'use strict'
 
 const kubernetes = require('@kubernetes/client-node')
-const makePlugin = require('fastify-plugin')
+const plugin = require('fastify-plugin')
 
 function getContext (config, options) {
   const namespace = options.namespace || 'default'
@@ -107,19 +107,12 @@ function loadConfig (options) {
   }
 }
 
-function fastifyKubernetes (fastify, options, callback) {
-  let config
-  try {
-    config = loadConfig(options)
-  } catch (err) {
-    callback(err)
-    return
-  }
+async function fastifyKubernetesPlugin (fastify, options) {
+  const config = loadConfig(options)
 
   const context = getContext(config, options)
   if (!context) {
-    callback(new Error('Kubernetes context not found'))
-    return
+    return Promise.reject(new Error('Kubernetes context not found'))
   }
 
   config.setCurrentContext(context.name)
@@ -136,8 +129,7 @@ function fastifyKubernetes (fastify, options, callback) {
 
   if (!name) {
     if (fastify.kubernetes) {
-      callback(new Error('fastify-kubernetes has already registered'))
-      return
+      return Promise.reject(new Error('fastify-kubernetes has already registered'))
     }
     fastify.decorate('kubernetes', obj)
   } else {
@@ -145,16 +137,13 @@ function fastifyKubernetes (fastify, options, callback) {
       fastify.decorate('kubernetes', obj)
     }
     if (fastify.kubernetes[name]) {
-      callback(new Error('Context name already registered: ' + name))
-      return
+      return Promise.reject(new Error(`Kubernetes context "${name}" already registered`))
     }
     fastify.kubernetes[name] = obj
   }
-
-  callback()
 }
 
-module.exports = makePlugin(fastifyKubernetes, {
-  fastify: '^3.0.0',
+module.exports = plugin(fastifyKubernetesPlugin, {
+  fastify: '^4.0.0',
   name: 'fastify-kubernetes'
 })
