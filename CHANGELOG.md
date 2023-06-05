@@ -1,3 +1,23 @@
+0.13.0 / 2023-06-05
+===================
+
+  * Upgrade `@kubernetes/client-node` to `^0.18.1` (Kubernetes from v1.22 to v1.25)
+
+0.12.0 / 2022-06-13
+===================
+
+  * Upgrade `@kubernetes/client-node` to `^0.16.3` (Kubernetes from v1.19 to v1.22)
+  * Add support for `fastify` v4
+  * **Remove support for `fastify` v3**
+
+0.11.0 / 2022-01-18
+===================
+
+  * Upgrade `@kubernetes/client-node` to `^0.16.1` (Kubernetes from v1.19 to v1.22)
+  * Support custom `KubeConfig` instance usage
+  * Support in-cluster `KubeConfig` loading
+  * Add `auto` mode for `KubeConfig` loading
+
 0.10.0 / 2021-11-04
 ===================
 
