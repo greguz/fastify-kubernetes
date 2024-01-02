@@ -1,10 +1,11 @@
 allow-incomplete-coverage: true
 bail: true
+coverage-report: [
+  "text"
+]
 include:
   - "test/**/*.js"
 test-env: [
   NODE_ENV=test
 ]
-coverage-report: [
-  "text"
-]
+timeout: 120
