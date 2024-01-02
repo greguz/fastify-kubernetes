@@ -1,7 +1,10 @@
-/.vscode
-/node_modules
-/npm-debug.log
-/fastify-kubernetes.d.ts
-/.nyc_output
-/package-lock.json
-/coverage
+.*
+!.editorconfig
+!.github
+!.gitignore
+!.taprc
+coverage
+fastify-kubernetes.d.ts
+node_modules
+npm-debug.log
+package-lock.json
