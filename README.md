@@ -11,7 +11,8 @@ This plugin uses the [official Node.js Kubernetes client](https://www.npmjs.com/
 
 ## Compatibility
 
-The installed version of `@kubernetes/client-node` is the `v0.18.x`. The targeted Kubernetes version is from the `v1.22` to `v1.25`.
+The installed version of `@kubernetes/client-node` is the `v0.20.x`.
+The targeted Kubernetes version is from the `v1.26` to `v1.28`.
 
 For more info about supported Kubernetes version see [here](https://github.com/kubernetes-client/javascript#compatibility).
 
