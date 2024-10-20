@@ -1,6 +1,6 @@
 {
   "name": "fastify-kubernetes",
-  "version": "0.14.0",
+  "version": "0.15.0",
   "description": "Fastify Kubernetes client plugin",
   "main": "fastify-kubernetes.js",
   "types": "fastify-kubernetes.d.ts",
@@ -26,13 +26,13 @@
     "fastify-kubernetes.d.ts"
   ],
   "dependencies": {
-    "@kubernetes/client-node": "^0.20.0",
-    "fastify-plugin": "^4.5.1"
+    "@kubernetes/client-node": "^0.22.1",
+    "fastify-plugin": "^5.0.0"
   },
   "devDependencies": {
-    "fastify": "^4.25.2",
+    "fastify": "^5.0.0",
     "proxyquire": "^2.1.3",
-    "standard": "^17.1.0",
-    "tap": "^18.6.1"
+    "standard": "^17.1.2",
+    "tap": "^21.0.1"
   }
 }

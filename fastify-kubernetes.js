@@ -16,10 +16,7 @@ function getContext (config, options) {
     if (options.user && context.user !== options.user) {
       return false
     }
-    if ((context.namespace || 'default') !== namespace) {
-      return false
-    }
-    return true
+    return (context.namespace || 'default') === namespace;
   })
 }
 
@@ -144,6 +141,6 @@ async function fastifyKubernetesPlugin (fastify, options) {
 }
 
 module.exports = plugin(fastifyKubernetesPlugin, {
-  fastify: '^4.0.0',
+  fastify: '^5.x',
   name: 'fastify-kubernetes'
 })
