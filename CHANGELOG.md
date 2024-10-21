@@ -1,3 +1,10 @@
+0.14.0 / 2024-10-20
+===================
+
+  * Upgrade `@kubernetes/client-node` to `^0.22.1` (Kubernetes from v1.28 to v1.30)
+  * Add support for `fastify` v5
+  * **Remove support for `fastify` v4**
+
 0.14.0 / 2024-01-02
 ===================
 
