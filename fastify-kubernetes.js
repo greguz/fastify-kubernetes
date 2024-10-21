@@ -16,7 +16,7 @@ function getContext (config, options) {
     if (options.user && context.user !== options.user) {
       return false
     }
-    return (context.namespace || 'default') === namespace;
+    return (context.namespace || 'default') === namespace
   })
 }
 
