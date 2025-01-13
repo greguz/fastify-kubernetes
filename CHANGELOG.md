@@ -1,3 +1,9 @@
+# Changelog
+
+This file is old.
+
+Please see [GitHub Releases page](https://github.com/greguz/fastify-kubernetes/releases).
+
 0.14.0 / 2024-10-20
 ===================
 

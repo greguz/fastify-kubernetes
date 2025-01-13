@@ -1,7 +1,5 @@
-'use strict'
-
-const kubernetes = require('@kubernetes/client-node')
-const plugin = require('fastify-plugin')
+import * as kubernetes from '@kubernetes/client-node'
+import plugin from 'fastify-plugin'
 
 function getContext (config, options) {
   const namespace = options.namespace || 'default'
@@ -20,9 +18,13 @@ function getContext (config, options) {
   })
 }
 
+/**
+ * This function will creates the client instance and cache it.
+ * This is done because I have no idea if the `SomethingV42Api` is a valid KubeConfig Api constructor.
+ */
 function buildGetter (config, Client) {
+  let client
   return function getter () {
-    let client
     if (!client) {
       client = config.makeApiClient(Client)
     }
@@ -34,13 +36,11 @@ function buildApi (config) {
   const api = {}
 
   for (const key of Object.keys(kubernetes)) {
-    const obj = kubernetes[key]
-
-    if (obj && obj.prototype && obj.prototype.setDefaultAuthentication) {
+    if (/.Api$/.test(key)) {
       Object.defineProperty(api, key, {
         configurable: true,
         enumerable: true,
-        get: buildGetter(config, obj)
+        get: buildGetter(config, kubernetes[key])
       })
     }
   }
@@ -48,60 +48,46 @@ function buildApi (config) {
   return api
 }
 
-function loadFromFile (file) {
-  if (typeof file !== 'string') {
-    throw new Error('Cannot load kubeconfig: option "file" is not a string')
-  }
-  const config = new kubernetes.KubeConfig()
-  config.loadFromFile(file)
-  return config
-}
-
-function loadFromString (yaml) {
-  if (typeof yaml !== 'string' && !Buffer.isBuffer(yaml)) {
-    throw new Error('Cannot load kubeconfig: option "yaml" is not a string or buffer')
-  }
-  const config = new kubernetes.KubeConfig()
-  config.loadFromString(yaml.toString())
-  return config
-}
-
-function loadFromCluster () {
-  const config = new kubernetes.KubeConfig()
-  config.loadFromCluster()
-  return config
-}
-
-function loadFromDefault () {
-  const config = new kubernetes.KubeConfig()
-  config.loadFromDefault()
-  return config
-}
-
 function loadConfig (options) {
-  // Explicit target
-  if (typeof options.kubeconfig === 'object' && options.kubeconfig !== null) {
+  // Handle (and verify) custom KubeConfig instance
+  if (typeof options.kubeconfig === 'object') {
+    if (!(options.kubeconfig instanceof kubernetes.KubeConfig)) {
+      throw new TypeError('KubeConfig loading error: unexpected KubeConfig instance type')
+    }
     return options.kubeconfig
-  } else if (options.kubeconfig === 'file') {
-    return loadFromFile(options.file)
-  } else if (options.kubeconfig === 'yaml') {
-    return loadFromString(options.yaml)
-  } else if (options.kubeconfig === 'default') {
-    return loadFromDefault()
-  } else if (options.kubeconfig === 'in-cluster') {
-    return loadFromCluster()
   }
 
-  // Auto mode
-  if (options.file) {
-    return loadFromFile(options.file)
-  } else if (options.yaml) {
-    return loadFromString(options.yaml)
-  } else if (process.env.KUBERNETES_SERVICE_HOST) {
-    return loadFromCluster()
-  } else {
-    return loadFromDefault()
+  // Validate selected KubeConfig loading mode
+  const mode = options.kubeconfig || 'auto'
+  if (
+    mode !== 'auto' &&
+    mode !== 'default' &&
+    mode !== 'file' &&
+    mode !== 'in-cluster' &&
+    mode !== 'yaml'
+  ) {
+    throw new TypeError('KubeConfig loading error: unknown loading mode')
   }
+
+  const config = new kubernetes.KubeConfig()
+
+  if (mode === 'file' || (mode === 'auto' && options.file)) {
+    if (typeof options.file !== 'string') {
+      throw new TypeError('KubeConfig loading error: option "file" is not a string')
+    }
+    config.loadFromFile(options.file)
+  } else if (mode === 'yaml' || (mode === 'auto' && options.yaml)) {
+    if (typeof options.yaml !== 'string' && !Buffer.isBuffer(options.yaml)) {
+      throw new TypeError('KubeConfig loading error: option "yaml" is not a string or buffer')
+    }
+    config.loadFromString(options.yaml.toString())
+  } else if (mode === 'in-cluster' || process.env.KUBERNETES_SERVICE_HOST) {
+    config.loadFromCluster()
+  } else {
+    config.loadFromDefault()
+  }
+
+  return config
 }
 
 async function fastifyKubernetesPlugin (fastify, options) {
@@ -109,12 +95,12 @@ async function fastifyKubernetesPlugin (fastify, options) {
 
   const context = getContext(config, options)
   if (!context) {
-    return Promise.reject(new Error('Kubernetes context not found'))
+    throw new Error('KubeConfig loading error: unable to find a matching context')
   }
 
   config.setCurrentContext(context.name)
 
-  const name = options.name
+  const key = options.name
   const obj = {
     config,
     context: context.name,
@@ -124,23 +110,23 @@ async function fastifyKubernetesPlugin (fastify, options) {
     api: buildApi(config)
   }
 
-  if (!name) {
+  if (!key) {
     if (fastify.kubernetes) {
-      return Promise.reject(new Error('fastify-kubernetes has already registered'))
+      throw new Error('fastify-kubernetes has already registered')
     }
     fastify.decorate('kubernetes', obj)
   } else {
-    if (!fastify.kubernetes) {
+    if (fastify.kubernetes === undefined) {
       fastify.decorate('kubernetes', obj)
     }
-    if (fastify.kubernetes[name]) {
-      return Promise.reject(new Error(`Kubernetes context "${name}" already registered`))
+    if (fastify.kubernetes[key] !== undefined) {
+      throw new Error(`Kubernetes context ${key} already registered`)
     }
-    fastify.kubernetes[name] = obj
+    fastify.kubernetes[key] = obj
   }
 }
 
-module.exports = plugin(fastifyKubernetesPlugin, {
+export default plugin(fastifyKubernetesPlugin, {
   fastify: '^5.x',
   name: 'fastify-kubernetes'
 })
