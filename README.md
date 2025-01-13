@@ -11,7 +11,7 @@ This plugin uses the [official Node.js Kubernetes client](https://www.npmjs.com/
 
 ## Compatibility
 
-The installed version of `@kubernetes/client-node` is the `v0.22.x`.
+The installed version of `@kubernetes/client-node` is the `v1.x.x`.
 The targeted Kubernetes version is from the `v1.28` to `v1.30`.
 
 For more info about supported Kubernetes version see [here](https://github.com/kubernetes-client/javascript#compatibility).
@@ -70,7 +70,9 @@ All properties are optional.
 > A `name` option can be used in order to connect to multiple kubernetes clusters.
 
 ```javascript
-const fastify = require('fastify')()
+import Fastify from 'fastify'
+
+const fastify = Fastify()
 
 fastify
   .register(require('fastify-kubernetes'), {
@@ -90,6 +92,8 @@ fastify.get('/', async function (req, reply) {
   // ------------
   reply.send(yourResult)
 })
+
+// TODO: start server, etc..
 ```
 
 ## Reference
@@ -103,12 +107,41 @@ The plugin will inject six properties under `kubernetes` decorator.
 - `namespace` is the context's namespace, defaults to `"default"`
 - `api` is an object containing all possible client types
 
-### API
+### Known API Clients
 
 You can retrieve a client by its original name from the kubernetes lib.
 
 ```javascript
-const client0 = this.kubernetes.api.CoreV1Api
-const client1 = this.kubernetes.api.BatchV1Api
-const client2 = this.kubernetes.api.BatchV1beta1Api
+import kubernetes from 'fastify-kubernetes'
+
+const fastify = Fastify()
+
+fastify.register(kubernetes)
+
+// Load plugins (http server not running)
+await fastify.ready()
+
+const client0 = fastify.kubernetes.api.CoreV1Api
+const client1 = fastify.kubernetes.api.BatchV1Api
+const client2 = fastify.kubernetes.api.BatchV1beta1Api
+```
+
+### Foreign API Clients
+
+You can also manually creates Api clients.
+
+```javascript 
+import { BatchV1Api } from '@kubernetes/client-node'
+import kubernetes from 'fastify-kubernetes'
+
+const fastify = Fastify()
+
+fastify.register(kubernetes)
+
+// Load plugins (http server not running)
+await fastify.ready()
+
+const batchApi = fastify.kubernetes.config.makeApiClient(BatchV1Api)
+
+const cronJobs = await batchApi.listNamespacedCronJob({ namespace: fastify.kubernetes.namespace })
 ```
