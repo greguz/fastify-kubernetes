@@ -49,25 +49,46 @@ fastify.listen(3000, err => {
 })
 ```
 
+### ESM - CommonJS Interoperability
+
+This module is now pure [ESM](https://nodejs.org/api/esm.html). This is to use the same module system of the `@kubernetes/client-node` (as from v1.0.0).
+
+This shouldn't be a problem with Node.js v22.13.0 or newer.
+
+If you are seeing an error like this one:
+
+```
+Error [ERR_REQUIRE_ESM]: require() of ES Module node_modules/fastify-kubernetes/fastify-kubernetes.js from my_script.js not supported.
+Instead change the require of fastify-kubernetes.js in my_script.js to a dynamic import() which is available in all CommonJS modules.
+    at Object.<anonymous> (my_script.js:2:20) {
+  code: 'ERR_REQUIRE_ESM'
+}
+```
+
+You have multimple options to solve the problem:
+
+- Upgrade you Node.js version to >=22.13.0
+- Use `await import('fastify-kubernetes')` instead of `require('fastify-kubernetes')`
+- Convert your project to use ESM instead of CommonJS
+
 ## Options
 
 All properties are optional.
 
 - `kubeconfig`: Kubernetes config file loading mode. Default is `"auto"`.
+  - `KubeConfig`: Load custom `KubeConfig` instance (see `@kubernetes/client-node` docs).
   - `"auto"`: Choose the first available mode in this order: Choose the first available config mode in this order: `"file"`, `"yaml"`, `"in-cluster"`, and `"default"`.
-  - `"default"`: Load config file the default OS location.
   - `"file"`: Load config file from `file` option.
-  - `"in-cluster"`: Load in-cluster kubeconfig file.
   - `"yaml"`: Load config from `yaml` option.
-  - `KubeConfig`: Load custom `KubeConfig` instance.
-- `file`: Config file path.
-- `yaml`: Config file content (string or buffer).
-- `context`: Wanted context. If the context does not exist, an error will be thrown.
-- `cluster`: Wanted cluster. If the cluster does not exist, an error will be thrown.
-- `user`: Wanted user. If the user does not exist, an error will be thrown.
-- `namespace`: Wanted namespace.
-
-> A `name` option can be used in order to connect to multiple kubernetes clusters.
+  - `"in-cluster"`: Load in-cluster kubeconfig file.
+  - `"default"`: Load config file the default OS location.
+- `file`: `kubeconfig` (YAML format) file path.
+- `yaml`: Raw `kubeconfig` yaml data (string of Node.js `Buffer`).
+- `context`: Loads Context by name.
+- `cluster`: Loads Context by Curster's name.
+- `user`: Loads Context by User's name.
+- `namespace`: Loads Context by Namespace.
+- `name`: Nested (Fastify) decorator name (will inject `fastify.kubernetes[key]`).
 
 ```javascript
 import Fastify from 'fastify'
@@ -100,12 +121,12 @@ fastify.get('/', async function (req, reply) {
 
 The plugin will inject six properties under `kubernetes` decorator.
 
-- `config` is the `KubeConfig` instance
-- `context` is the current context name
-- `cluster` is the context's cluster
-- `user` is the context's user
-- `namespace` is the context's namespace, defaults to `"default"`
-- `api` is an object containing all possible client types
+- `config` is the `KubeConfig` instance.
+- `context` is the current Context's name.
+- `cluster` is the Cluster's name.
+- `user` is the User's name.
+- `namespace` is the Namespace, defaults to `"default"`.
+- `api` is an object containing all known client instances (see below).
 
 ### Known API Clients
 

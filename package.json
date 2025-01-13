@@ -3,8 +3,11 @@
   "version": "0.15.0",
   "description": "Fastify Kubernetes client plugin",
   "type": "module",
+  "main": "./fastify-kubernetes.js",
+  "types": "./fastify-kubernetes.d.ts",
   "exports": {
     "import": "./fastify-kubernetes.js",
+    "require": "./fastify-kubernetes.js",
     "types": "./fastify-kubernetes.d.ts"
   },
   "scripts": {
