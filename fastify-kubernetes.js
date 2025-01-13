@@ -1,20 +1,21 @@
 import * as kubernetes from '@kubernetes/client-node'
 import plugin from 'fastify-plugin'
 
-function getContext (config, options) {
-  const namespace = options.namespace || 'default'
-
-  return config.getContexts().find(context => {
-    if (options.context && context.name !== options.context) {
+function getContext (config, { cluster, context, namespace, user }) {
+  return config.getContexts().find(obj => {
+    if (context && obj.name !== context) {
       return false
     }
-    if (options.cluster && context.cluster !== options.cluster) {
+    if (cluster && obj.cluster !== cluster) {
       return false
     }
-    if (options.user && context.user !== options.user) {
+    if (user && obj.user !== user) {
       return false
     }
-    return (context.namespace || 'default') === namespace
+    if (namespace && (obj.namespace || 'default') !== namespace) {
+      return false
+    }
+    return true
   })
 }
 

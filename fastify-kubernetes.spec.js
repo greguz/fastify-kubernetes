@@ -7,7 +7,7 @@ tap.test('defaults', async t => {
   class CoreV1Api {
     listNamespacedPod (param) {
       t.match(param, { namespace: 'default' })
-      return Promise.resolve([])
+      return Promise.resolve({ items: [] })
     }
   }
 
@@ -60,9 +60,9 @@ tap.test('defaults', async t => {
   // Test client instance caching
   t.ok(coreApi === fastify.kubernetes.api.CoreV1Api)
 
-  const pods = await coreApi.listNamespacedPod({ namespace: fastify.kubernetes.namespace })
+  const list = await coreApi.listNamespacedPod({ namespace: fastify.kubernetes.namespace })
 
-  t.ok(Array.isArray(pods))
+  t.match(list, { items: [] })
 })
 
 tap.test('plugin collision', async t => {
@@ -253,4 +253,59 @@ tap.test('unknown kubeconfig mode', async t => {
 
   const err = await t.rejects(fastify.ready())
   t.match(err, { message: 'KubeConfig loading error: unknown loading mode' })
+})
+
+tap.test('do not default namespace', async t => {
+  t.plan(4)
+
+  class KubeConfig {
+    getContexts () {
+      t.pass()
+      return [
+        {
+          cluster: 'first',
+          name: 'first',
+          namespace: 'first',
+          user: 'first'
+        },
+        {
+          cluster: 'minikube',
+          name: 'minikube',
+          namespace: 'minikube',
+          user: 'minikube'
+        },
+        {
+          cluster: 'last',
+          name: 'last',
+          namespace: 'last',
+          user: 'last'
+        }
+      ]
+    }
+
+    loadFromDefault () {
+      t.pass()
+    }
+
+    setCurrentContext (name) {
+      t.equal(name, 'minikube')
+    }
+  }
+
+  const plugin = await t.mockImport('./fastify-kubernetes.js', {
+    '@kubernetes/client-node': {
+      KubeConfig
+    }
+  })
+
+  const fastify = Fastify()
+  t.teardown(() => fastify.close())
+
+  await fastify.register(plugin, { context: 'minikube' })
+  t.match(fastify.kubernetes, {
+    cluster: 'minikube',
+    context: 'minikube',
+    namespace: 'minikube',
+    user: 'minikube'
+  })
 })
